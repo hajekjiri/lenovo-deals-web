@@ -1,21 +1,117 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Deals</title>
-	<script src='./assets/js/jquery-3.4.1.min.js'></script>
-	<script src='./assets/js/popper.min.js'></script>
-	<script src='./assets/js/bootstrap.min.js'></script>
-	<link rel='stylesheet' href='./assets/css/bootstrap.min.css'>
+  <title>Deals</title>
+  <script src='./assets/js/jquery-3.4.1.min.js'></script>
+  <script src='./assets/js/popper.min.js'></script>
+  <script src='./assets/js/bootstrap.min.js'></script>
+  <link rel='stylesheet' href='./assets/css/bootstrap.min.css'>
 </head>
-<body>
+<body style="background-color: /*#ebf4ff;*/#ffffff">
+<div class='container' style='margin-top: 10px; margin-bottom: 10px;'>
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <div class='total'></div>
 
+</div>
 </body>
 </html>
 
 <script>
 $().ready(() => {
-	$.get('./data/lenovo.json', (data) => {
-		console.log('Successfully loaded data!');
-	});
+  $.get('./data/lenovo.json', (data) => {
+    console.log('Successfully loaded data!');
+
+    $('.spinner-border').attr('hidden', 'true');
+
+    $('.total').html('<h3>Found ' + data.length + ' deals.</h3>');
+
+    let target = $('.container');
+    keys = {
+        'CPU': 'Processor',
+        'RAM': 'Memory',
+        'GPU': 'Graphics',
+        'Storage': 'Hard Drive',
+        'Battery': 'Battery',
+        'OS': 'Operating System',
+        'Warranty': 'Warranty',
+    }
+    for (let i = 0; i < data.length; i += 2) {
+
+      specs1 = {}
+      elem1 =
+          '<div class="col-sm-12 col-lg-6" style="margin: 10px 0 10px 0">' +
+            '<div class="row text-center">' +
+              '<div class="col-sm-6">' +
+                '<div class="font-weight-bold" style="font-size: 20px;">' + data[i]['title'] + ' - ' + data[i]['type'] + '</div>' +
+                '<div style="font-size: 18px;">' + data[i]['status'] + '</div>' +
+                '<div style="text-decoration: line-through; font-size: 30px;">$' + data[i]['oldPrice'] + '</div>' +
+                '<div style="font-size: 30px;">$' + data[i]['newPrice'] + '</div>' +
+                '<div style="font-size: 25px;">You save ' + parseInt(100 * (1 - data[i]['newPrice'] / data[i]['oldPrice'])) + '% ' + ' ($' + parseInt(data[i]['oldPrice'] - data[i]['newPrice']) + ')</div>' +
+              '</div>' +
+              '<div class="col-sm-6">' +
+                '<img src="' + data[i]['imageUrl'] + '" style="height: 200px; width: 200px; padding: 10px;">' +
+              '</div>' +
+            '</div>' +
+            '<div class="row text-left">' +
+              '<div class="col-sm-12">';
+
+      for (key in keys) {
+        if (data[i]['specs'][keys[key]] !== undefined) {
+          elem1 +=
+                '<div class="row"><div class="col-sm-2 font-weight-bold">' + key + ':</div><div class="col-sm-10">' + data[i]['specs'][keys[key]] + '</div></div>'
+        }
+      }
+
+      elem1 +=
+              '</div>' +
+            '</div>' +
+          '</div>';
+
+      let elem2 = '';
+      if (i + 1 < data.length) {
+        elem2 =
+            '<div class="col-sm-12 col-lg-6" style="margin: 10px 0 10px 0">' +
+              '<div class="row text-center">' +
+                '<div class="col-sm-6">' +
+                  '<div class="font-weight-bold" style="font-size: 20px;">' + data[i + 1]['title'] + ' - ' + data[i + 1]['type'] + '</div>' +
+                  '<div style="font-size: 18px;">' + data[i + 1]['status'] + '</div>' +
+                  '<div style="text-decoration: line-through; font-size: 30px;">$' + data[i + 1]['oldPrice'] + '</div>' +
+                  '<div style="font-size: 30px;">$' + data[i + 1]['newPrice'] + '</div>' +
+                  '<div style="font-size: 25px;">You save ' + parseInt(100 * (1 - data[i + 1]['newPrice'] / data[i + 1]['oldPrice'])) + '% ' + ' ($' + parseInt(data[i + 1]['oldPrice'] - data[i + 1]['newPrice']) + ')</div>' +
+                '</div>' +
+                '<div class="col-sm-6">' +
+                  '<img src="' + data[i + 1]['imageUrl'] + '" style="height: 200px; width: 200px; padding: 10px;">' +
+                '</div>' +
+              '</div>' +
+              '<div class="row text-left">' +
+                '<div class="col-sm-12">';
+
+        for (key in keys) {
+          if (data[i + 1]['specs'][keys[key]] !== undefined) {
+            elem2 +=
+                  '<div class="row"><div class="col-sm-2 font-weight-bold">' + key + ':</div><div class="col-sm-10">' + data[i + 1]['specs'][keys[key]] + '</div></div>'
+          }
+        }
+
+        elem2 +=
+                '</div>' +
+              '</div>' +
+            '</div>';
+      }
+
+      target.append([
+        '<div class="row border rounded">' +
+          elem1 +
+          elem2 +
+        '</div>'
+      ]);
+    }
+    //let obj = JSON.parse(data);
+    //console.log(obj);
+  });
 });
 </script>
